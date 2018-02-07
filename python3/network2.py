@@ -11,20 +11,14 @@ features.
 
 """
 
-#### Libraries
-# Standard library
 import json
 import random
 import sys
-
-# Third-party libraries
 import numpy as np
+# Define the quadratic and cross-entropy cost functions
 
-
-#### Define the quadratic and cross-entropy cost functions
 
 class QuadraticCost(object):
-
     @staticmethod
     def fn(a, y):
         """Return the cost associated with an output ``a`` and desired output
@@ -40,7 +34,6 @@ class QuadraticCost(object):
 
 
 class CrossEntropyCost(object):
-
     @staticmethod
     def fn(a, y):
         """Return the cost associated with an output ``a`` and desired output
@@ -63,10 +56,10 @@ class CrossEntropyCost(object):
         """
         return (a-y)
 
+# Main Network class
 
-#### Main Network class
+
 class Network(object):
-
     def __init__(self, sizes, cost=CrossEntropyCost):
         """The list ``sizes`` contains the number of neurons in the respective
         layers of the network.  For example, if the list was [2, 3, 1]
@@ -81,7 +74,7 @@ class Network(object):
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.default_weight_initializer()
-        self.cost=cost
+        self.cost = cost
 
     def default_weight_initializer(self):
         """Initialize each weight using a Gaussian distribution with mean 0
@@ -127,13 +120,13 @@ class Network(object):
         return a
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
-            lmbda = 0.0,
+            lmbda=0.0,
             evaluation_data=None,
             monitor_evaluation_cost=False,
             monitor_evaluation_accuracy=False,
             monitor_training_cost=False,
             monitor_training_accuracy=False,
-            early_stopping_n = 0):
+            early_stopping_n=0):
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -153,21 +146,16 @@ class Network(object):
         are empty if the corresponding flag is not set.
 
         """
-
         # early stopping functionality:
-        best_accuracy=1
-
+        best_accuracy = 1
         training_data = list(training_data)
         n = len(training_data)
-
         if evaluation_data:
             evaluation_data = list(evaluation_data)
             n_data = len(evaluation_data)
-
         # early stopping functionality:
-        best_accuracy=0
-        no_accuracy_change=0
-
+        best_accuracy = 0
+        no_accuracy_change = 0
         evaluation_cost, evaluation_accuracy = [], []
         training_cost, training_accuracy = [], []
         for j in range(epochs):
@@ -178,9 +166,7 @@ class Network(object):
             for mini_batch in mini_batches:
                 self.update_mini_batch(
                     mini_batch, eta, lmbda, len(training_data))
-
             print("Epoch %s training complete" % j)
-
             if monitor_training_cost:
                 cost = self.total_cost(training_data, lmbda)
                 training_cost.append(cost)
@@ -197,7 +183,6 @@ class Network(object):
                 accuracy = self.accuracy(evaluation_data)
                 evaluation_accuracy.append(accuracy)
                 print("Accuracy on evaluation data: {} / {}".format(self.accuracy(evaluation_data), n_data))
-
             # Early stopping:
             if early_stopping_n > 0:
                 if accuracy > best_accuracy:
@@ -206,11 +191,9 @@ class Network(object):
                     #print("Early-stopping: Best so far {}".format(best_accuracy))
                 else:
                     no_accuracy_change += 1
-
                 if (no_accuracy_change == early_stopping_n):
                     #print("Early-stopping: No accuracy change in last epochs: {}".format(early_stopping_n))
                     return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
-
         return evaluation_cost, evaluation_accuracy, \
             training_cost, training_accuracy
 
@@ -242,8 +225,8 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # feedforward
         activation = x
-        activations = [x] # list to store all the activations, layer by layer
-        zs = [] # list to store all the z vectors, layer by layer
+        activations = [x]  # list to store all the activations, layer by layer
+        zs = []  # list to store all the z vectors, layer by layer
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation)+b
             zs.append(z)
@@ -295,8 +278,7 @@ class Network(object):
                        for (x, y) in data]
         else:
             results = [(np.argmax(self.feedforward(x)), y)
-                        for (x, y) in data]
-
+                       for (x, y) in data]
         result_accuracy = sum(int(x == y) for (x, y) in results)
         return result_accuracy
 
@@ -310,9 +292,10 @@ class Network(object):
         cost = 0.0
         for x, y in data:
             a = self.feedforward(x)
-            if convert: y = vectorized_result(y)
+            if convert:
+                y = vectorized_result(y)
             cost += self.cost.fn(a, y)/len(data)
-            cost += 0.5*(lmbda/len(data))*sum(np.linalg.norm(w)**2 for w in self.weights) # '**' - to the power of.
+            cost += 0.5*(lmbda/len(data))*sum(np.linalg.norm(w)**2 for w in self.weights)  # '**' - to the power of.
         return cost
 
     def save(self, filename):
@@ -325,7 +308,9 @@ class Network(object):
         json.dump(data, f)
         f.close()
 
-#### Loading a Network
+# Loading a Network
+
+
 def load(filename):
     """Load a neural network from the file ``filename``.  Returns an
     instance of Network.
@@ -340,7 +325,9 @@ def load(filename):
     net.biases = [np.array(b) for b in data["biases"]]
     return net
 
-#### Miscellaneous functions
+# Miscellaneous functions
+
+
 def vectorized_result(j):
     """Return a 10-dimensional unit vector with a 1.0 in the j'th position
     and zeroes elsewhere.  This is used to convert a digit (0...9)
@@ -351,9 +338,11 @@ def vectorized_result(j):
     e[j] = 1.0
     return e
 
+
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
+
 
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
