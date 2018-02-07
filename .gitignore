@@ -102,3 +102,6 @@ ENV/
 
 # JetBrains IDEs
 .idea/
+
+# Presaved network
+MyNetwork
