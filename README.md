@@ -1,8 +1,6 @@
-# ai-week-workshop
-Turku AI Week 2018 Machine Learning Workshop
+#  Turku AI Week 2018 Machine Learning Workshop
 
-Setup
-=====
+## Setup
 
 ```
 # Install Python 2 or Python 3
@@ -20,8 +18,7 @@ jupyter notebook
 # Web browser should start automatically, open "Machine Learning Workshop Tutorial" notebook in there.
 ```
 
-Adding or Removing Dependencies
-===============================
+## Adding or Removing Dependencies
 
 ```
 # Edit ./requirements.in
@@ -44,3 +41,6 @@ pip-compile --output-file=python3/requirements.txt python3/requirements.in
 pip install -r python3/requirements.txt
 ```
 
+## License
+
+TODO
