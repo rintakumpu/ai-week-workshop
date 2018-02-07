@@ -17,12 +17,10 @@ Needless to say, this isn't a very good way of recognizing handwritten
 digits!  Still, it's useful to show what sort of performance we get
 from naive ideas."""
 
-#### Libraries
-# Standard library
 from collections import defaultdict
 
-# My libraries
 import mnist_loader
+
 
 def main():
     training_data, validation_data, test_data = mnist_loader.load_data()
@@ -35,6 +33,7 @@ def main():
                       for image, digit in zip(test_data[0], test_data[1]))
     print("Baseline classifier using average darkness of image.")
     print("{0} of {1} values correct.".format(num_correct, len(test_data[1])))
+
 
 def avg_darknesses(training_data):
     """ Return a defaultdict whose keys are the digits 0 through 9.
@@ -51,6 +50,7 @@ def avg_darknesses(training_data):
         avgs[digit] = darknesses[digit] / n
     return avgs
 
+
 def guess_digit(image, avgs):
     """Return the digit whose average darkness in the training data is
     closest to the darkness of ``image``.  Note that ``avgs`` is
@@ -59,6 +59,7 @@ def guess_digit(image, avgs):
     darkness = sum(image)
     distances = {k: abs(v-darkness) for k, v in avgs.items()}
     return min(distances, key=distances.get)
+
 
 if __name__ == "__main__":
     main()

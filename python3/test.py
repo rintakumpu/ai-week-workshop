@@ -124,6 +124,8 @@ net.SGD(training_data, 30, 10, 0.1,
 
 
 """
+
+
 def testTheano():
     from theano import function, config, shared, sandbox
     import theano.tensor as T
@@ -148,13 +150,20 @@ def testTheano():
     else:
         print('Used the gpu')
 # Perform check:
-#testTheano()
+# testTheano()
 
 
 # ----------------------
 # - network3.py example:
 import network3
-from network3 import Network, ConvPoolLayer, FullyConnectedLayer, SoftmaxLayer # softmax plus log-likelihood cost is more common in modern image classification networks.
+# chapter 6 -  rectified linear units and some l2 regularization (lmbda=0.1) => even better accuracy
+from network3 import (  # softmax plus log-likelihood cost is more common in modern image classification networks.
+    ConvPoolLayer,
+    FullyConnectedLayer,
+    Network,
+    ReLU,
+    SoftmaxLayer,
+)
 
 # read data:
 training_data, validation_data, test_data = network3.load_data_shared()
@@ -194,8 +203,6 @@ net = Network([
 net.SGD(training_data, 60, mini_batch_size, 0.1, validation_data, test_data)
 '''
 
-# chapter 6 -  rectified linear units and some l2 regularization (lmbda=0.1) => even better accuracy
-from network3 import ReLU
 net = Network([
     ConvPoolLayer(image_shape=(mini_batch_size, 1, 28, 28),
                   filter_shape=(20, 1, 5, 5),
