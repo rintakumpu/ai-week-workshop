@@ -27,44 +27,48 @@ from Chris Olah (http://colah.github.io ).
 
 """
 
-#### Libraries
-# Standard library
-import pickle
 import gzip
+import pickle
 
-# Third-party libraries
 import numpy as np
 import theano
 import theano.tensor as T
-from theano.tensor.nnet import conv
-from theano.tensor.nnet import softmax
-from theano.tensor import shared_randomstreams
+from theano.tensor import shared_randomstreams, tanh
+from theano.tensor.nnet import conv, sigmoid, softmax
 from theano.tensor.signal.pool import pool_2d
 
 # Activation functions for neurons
+
+
 def linear(z): return z
+
+
 def ReLU(z): return T.maximum(0.0, z)
-from theano.tensor.nnet import sigmoid
-from theano.tensor import tanh
 
 
-#### Constants
+
+# Constants
 GPU = False
 if GPU:
-    print("Trying to run under a GPU.  If this is not desired, then modify "+\
-        "network3.py\nto set the GPU flag to False.")
-    try: theano.config.device = 'gpu'
-    except: pass # it's already set
+    print("Trying to run under a GPU.  If this is not desired, then modify " +
+          "network3.py\nto set the GPU flag to False.")
+    try:
+        theano.config.device = 'gpu'
+    except:
+        pass  # it's already set
     theano.config.floatX = 'float32'
 else:
-    print("Running with a CPU.  If this is not desired, then the modify "+\
-        "network3.py to set\nthe GPU flag to True.")
+    print("Running with a CPU.  If this is not desired, then the modify " +
+          "network3.py to set\nthe GPU flag to True.")
 
-#### Load the MNIST data
+# Load the MNIST data
+
+
 def load_data_shared(filename="mnist.pkl.gz"):
     f = gzip.open(filename, 'rb')
     training_data, validation_data, test_data = pickle.load(f, encoding="latin1")
     f.close()
+
     def shared(data):
         """Place the data into shared variables.  This allows Theano to copy
         the data to the GPU, if one is available.
@@ -77,7 +81,9 @@ def load_data_shared(filename="mnist.pkl.gz"):
         return shared_x, T.cast(shared_y, "int32")
     return [shared(training_data), shared(validation_data), shared(test_data)]
 
-#### Main class used to construct and train networks
+# Main class used to construct and train networks
+
+
 class Network(object):
 
     def __init__(self, layers, mini_batch_size):
@@ -93,8 +99,8 @@ class Network(object):
         self.y = T.ivector("y")
         init_layer = self.layers[0]
         init_layer.set_inpt(self.x, self.x, self.mini_batch_size)
-        for j in range(1, len(self.layers)): # xrange() was renamed to range() in Python 3.
-            prev_layer, layer  = self.layers[j-1], self.layers[j]
+        for j in range(1, len(self.layers)):  # xrange() was renamed to range() in Python 3.
+            prev_layer, layer = self.layers[j-1], self.layers[j]
             layer.set_inpt(
                 prev_layer.output, prev_layer.output_dropout, self.mini_batch_size)
         self.output = self.layers[-1].output
@@ -114,15 +120,15 @@ class Network(object):
 
         # define the (regularized) cost function, symbolic gradients, and updates
         l2_norm_squared = sum([(layer.w**2).sum() for layer in self.layers])
-        cost = self.layers[-1].cost(self)+\
-               0.5*lmbda*l2_norm_squared/num_training_batches
+        cost = self.layers[-1].cost(self) +\
+            0.5*lmbda*l2_norm_squared/num_training_batches
         grads = T.grad(cost, self.params)
         updates = [(param, param-eta*grad)
                    for param, grad in zip(self.params, grads)]
 
         # define functions to train a mini-batch, and to compute the
         # accuracy in validation and test mini-batches.
-        i = T.lscalar() # mini-batch index
+        i = T.lscalar()  # mini-batch index
         train_mb = theano.function(
             [i], cost, updates=updates,
             givens={
@@ -180,7 +186,8 @@ class Network(object):
             best_validation_accuracy, best_iteration))
         print("Corresponding test accuracy of {0:.2%}".format(test_accuracy))
 
-#### Define layer types
+# Define layer types
+
 
 class ConvPoolLayer(object):
     """Used to create a combination of a convolutional and a max-pooling
@@ -207,7 +214,7 @@ class ConvPoolLayer(object):
         self.filter_shape = filter_shape
         self.image_shape = image_shape
         self.poolsize = poolsize
-        self.activation_fn=activation_fn
+        self.activation_fn = activation_fn
         # initialize weights and biases
         n_out = (filter_shape[0]*np.prod(filter_shape[2:])/np.prod(poolsize))
         self.w = theano.shared(
@@ -231,7 +238,8 @@ class ConvPoolLayer(object):
             input=conv_out, ws=self.poolsize, ignore_border=True)
         self.output = self.activation_fn(
             pooled_out + self.b.dimshuffle('x', 0, 'x', 'x'))
-        self.output_dropout = self.output # no dropout in the convolutional layers
+        self.output_dropout = self.output  # no dropout in the convolutional layers
+
 
 class FullyConnectedLayer(object):
 
@@ -267,6 +275,7 @@ class FullyConnectedLayer(object):
         "Return the accuracy for the mini-batch."
         return T.mean(T.eq(y, self.y_out))
 
+
 class SoftmaxLayer(object):
 
     def __init__(self, n_in, n_out, p_dropout=0.0):
@@ -299,10 +308,11 @@ class SoftmaxLayer(object):
         return T.mean(T.eq(y, self.y_out))
 
 
-#### Miscellanea
+# Miscellanea
 def size(data):
     "Return the size of the dataset `data`."
     return data[0].get_value(borrow=True).shape[0]
+
 
 def dropout_layer(layer, p_dropout):
     srng = shared_randomstreams.RandomStreams(
