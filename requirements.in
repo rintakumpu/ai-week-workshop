@@ -1,0 +1,7 @@
+# Packages used in the Notebook but not in the example source code itself.
+jupyter
+pillow
+imageio
+matplotlib
+keras
+tensorflow
