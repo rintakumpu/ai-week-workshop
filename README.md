@@ -1,6 +1,12 @@
 #  Turku AI Week 2018 Machine Learning Workshop
 
+## Resources
+
+TODO.
+
 ## Setup
+
+**Note!** You can skip these if you are using [Anaconda](https://www.anaconda.com/download/).
 
 ```
 # Install Python 2 or Python 3
@@ -43,4 +49,4 @@ pip install -r python3/requirements.txt
 
 ## License
 
-TODO
+TODO.
